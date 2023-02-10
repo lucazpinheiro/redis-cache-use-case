@@ -1,5 +1,6 @@
 import express from 'express'
 import * as mongo from './lib/mongo'
+import * as cache from './lib/cache'
 
 const PORT = Number(process.env?.PORT) || 3000
 const MONGO_URI = String(process.env?.MONGO_URI)
@@ -17,11 +18,38 @@ app.get('/status', (req, res) => {
     msg: 'up and running'
   })
 })
-
-export async function start() {
-  console.log(PORT, MONGO_URI)
+app.get('/products', async (req, res) => {
   try {
-    await mongo.connect(MONGO_URI)
+    const products = await mongo.getProducts()
+    res.status(200).json({
+      products
+    })
+  } catch (err) {
+    res.status(500).json({
+      msg: 'something went wrong',
+      error: JSON.stringify(err)
+    })
+  }
+})
+app.post('/products', async (req, res) => {
+  try {
+    const { id, name } = req.body
+    await mongo.createProduct({
+      id, name
+    })
+    res.status(201).json()
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({
+      msg: 'something went wrong',
+      error: JSON.stringify(err)
+    })
+  }
+})
+
+export async function start () {
+  try {
+    await Promise.all([mongo.connect(MONGO_URI), cache.connect()])
     app.listen(PORT, () => {
       console.log(`server is up on http://localhost:${PORT}`)
     })

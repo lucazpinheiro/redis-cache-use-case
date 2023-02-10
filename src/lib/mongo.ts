@@ -1,8 +1,13 @@
 
-import { Schema, model, connect } from 'mongoose'
+import mongoose, { Schema, model } from 'mongoose'
 import { Product } from '../types'
 
-const productSchema = new Schema<Product>({
+interface IProduct {
+  id: string;
+  name: string;
+}
+
+const productSchema = new Schema<IProduct>({
   id: {
     type: String,
     required: true
@@ -10,23 +15,21 @@ const productSchema = new Schema<Product>({
   name: {
     type: String,
     required: true
-  },
+  }
 })
 
-const ProductModel = model<Product>('api', productSchema, 'api')
+const ProductModel = model<IProduct>('api', productSchema)
 
-async function connect(uri: string) {
-  await connect(uri)
+async function connect (uri: string) {
+  await mongoose.connect(uri)
 }
 
-async function getProducts() {
+async function getProducts (): Promise<IProduct[]> {
   const products = await ProductModel.find()
-  return products.map(p => {
-    id: p.id
-  })
+  return products.map(({ name, id }) => ({ name, id }))
 }
 
-async function createProduct(p: Product) {
+async function createProduct (p: Product) {
   const product = new ProductModel(p)
   await product.save()
 }
@@ -36,21 +39,3 @@ export {
   getProducts,
   createProduct
 }
-
-// export default class ObjectModel implements Model {
-//   private model: typeof mongoosePointModel
-
-//   constructor (model: typeof mongoosePointModel) {
-//     this.model = model
-//   }
-
-//   async getAllPoints () {
-//     const mongoosePoints = await this.model.find()
-//     return mongoosePoints.map(point => new Point(point.name, point.xAxis, point.yAxis))
-//   }
-
-//   async createPoint (point: Point) {
-    
-// await this.model.create(point)
-//   }
-// }
