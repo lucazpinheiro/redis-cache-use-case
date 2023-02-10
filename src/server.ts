@@ -1,4 +1,6 @@
 import './config'
 import { start } from './app'
 
-start()
+start({
+  enableCache: true
+})

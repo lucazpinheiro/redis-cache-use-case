@@ -12,9 +12,6 @@ client.on('error', err => console.log('Redis Client Error', err))
 
 async function connect () {
   await client.connect()
-  await client.set('key', 'value')
-  await client.get('key')
-  await client.disconnect()
 }
 
 async function cacheIt (productId: string) {
@@ -25,10 +22,16 @@ async function cacheIt (productId: string) {
 }
 
 async function isCached (productId: string): Promise<boolean> {
+  console.log(productId)
   const value = await client.get(productId)
+  if (value === '') {
+    return true
+  }
+  return false
 }
 
 export {
   connect,
-  cacheIt
+  cacheIt,
+  isCached
 }

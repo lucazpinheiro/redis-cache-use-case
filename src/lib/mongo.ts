@@ -29,7 +29,12 @@ async function getProducts (): Promise<IProduct[]> {
   return products.map(({ name, id }) => ({ name, id }))
 }
 
+function timeConsumingTask () {
+  setTimeout(() => {}, 500)
+}
+
 async function createProduct (p: Product) {
+  timeConsumingTask()
   const product = new ProductModel(p)
   await product.save()
 }
