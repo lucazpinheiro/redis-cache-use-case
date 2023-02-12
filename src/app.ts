@@ -44,15 +44,16 @@ async function setupRoutes (opts: AppOpts) {
           id, name
         })
         res.status(201).json()
+        return
       }
       if (await cache.isCached(id)) {
         console.log('is cached')
-        res.status(201).json().end()
+        res.status(201).json()
+        return
       }
       await mongo.createProduct({
         id, name
       })
-      console.log('saving on cache')
       await cache.cacheIt(id)
       res.status(201).json()
     } catch (err) {

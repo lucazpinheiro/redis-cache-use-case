@@ -2,12 +2,7 @@
 import mongoose, { Schema, model } from 'mongoose'
 import { Product } from '../types'
 
-interface IProduct {
-  id: string;
-  name: string;
-}
-
-const productSchema = new Schema<IProduct>({
+const productSchema = new Schema<Product>({
   id: {
     type: String,
     required: true
@@ -18,13 +13,13 @@ const productSchema = new Schema<IProduct>({
   }
 })
 
-const ProductModel = model<IProduct>('api', productSchema)
+const ProductModel = model<Product>('api', productSchema)
 
 async function connect (uri: string) {
   await mongoose.connect(uri)
 }
 
-async function getProducts (): Promise<IProduct[]> {
+async function getProducts (): Promise<Product[]> {
   const products = await ProductModel.find()
   return products.map(({ name, id }) => ({ name, id }))
 }
